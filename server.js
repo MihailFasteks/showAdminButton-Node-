@@ -1,6 +1,6 @@
 ﻿var express  = require('express'); 
 var app = express();
-
+var cookieParser = require('cookie-parser'); 
 var path = require('path');
 var bodyParser = require('body-parser'); 
 var mssql = require('mssql');
@@ -20,6 +20,8 @@ app.set('view engine', 'ejs');
 
 // подгрузка статических файлов из папки pages 
 app.use(express.static(path.join(__dirname, 'pages')));
+
+app.use(cookieParser());
 
 // middleware для обработки данных в формате JSON 
 var jsonParser = bodyParser.json();
@@ -50,6 +52,9 @@ app.post('/loginAdmin', function(req, res) {
                 return res.status(401).json({ error: 'Неверный логин или пароль' });
             } else {
                 console.log('Администратор успешно авторизован');
+				res.cookie('login', login, { maxAge: 900000, httpOnly: true });
+                res.cookie('password', password, { maxAge: 900000, httpOnly: true });
+
                 res.redirect(`/?isAdmin=true`); 
             }
 
